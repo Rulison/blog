@@ -161,6 +161,9 @@ public class ParticleFilter extends InferenceEngine {
     nonNullTimesteps.addAll(slicedEvidence.keySet());
     nonNullTimesteps.addAll(slicedQueries.keySet());
     nonNullTimesteps.removeAll(Collections.singleton(null));
+
+    // TODO: clean up
+    int lag = 5;
     // We use a TreeSet to remove duplicates and to sort the timesteps.
     // (We can't construct a TreeSet directly because it doesn't accept nulls.)
     TreeSet<Timestep> sortedTimesteps = new TreeSet<Timestep>(nonNullTimesteps);
@@ -168,6 +171,17 @@ public class ParticleFilter extends InferenceEngine {
       if (slicedEvidence.containsKey(timestep)) {
         take(slicedEvidence.get(timestep));
       }
+      indexOfLatestEvidence = (int) Math.max(indexOfLatestEvidence, timestep.intValue());
+      Timestep currentTimestep = timestep.next();
+      for(int i=0; i < lag; i++) {
+        if (slicedEvidence.containsKey(currentTimestep)) {
+          take(slicedEvidence.get(currentTimestep)); // re-takes evidence, shouldn't matter?
+          currentTimestep = timestep.next();
+        }
+      }
+
+
+
       if (slicedQueries.containsKey(timestep)) {
         Queries currentQueries = slicedQueries.get(timestep);
         for (Particle particle : particles) {
