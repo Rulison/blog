@@ -171,7 +171,6 @@ public class ParticleFilter extends InferenceEngine {
       if (slicedEvidence.containsKey(timestep)) {
         take(slicedEvidence.get(timestep));
       }
-      indexOfLatestEvidence = (int) Math.max(indexOfLatestEvidence, timestep.intValue());
       Timestep currentTimestep = timestep.next();
       for(int i=0; i < lag; i++) {
         if (slicedEvidence.containsKey(currentTimestep)) {
